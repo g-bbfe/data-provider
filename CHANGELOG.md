@@ -1,17 +1,25 @@
 ## 更新日志
 
+### 0.0.10
+*2017-12-07*
+
+**BUGFIX**
+- 修复 `delete` 请求 带了默认 request body 造成的请求超时异常 
+
 ### 0.0.9
 *2017-12-07*
 
-**NEW FEATURE**
-- 支持设置自定义header头
-  ```
-	config: {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-	}
-	```
+**NEW FEATURE && BUGFIX**
+- [NEW FEATURE]支持设置自定义header头
+- [BUGFIX] 添加对 `put`, `patch` 类型请求的 request body 序列化
+
+```
+config: {
+  headers: {
+    'Content-Type': 'application/json'
+  }
+}
+```
 
 ### 0.0.8
 *2017-12-04*

@@ -6,6 +6,7 @@
     "ajax",
     "aop",
     "interceptors",
+    "producer/consumer model",
     "debounce"
   ],
   "main": "./lib/index.js",

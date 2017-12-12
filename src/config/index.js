@@ -19,13 +19,9 @@ const DefaultConfig = {
   // Must be a plain object or a URLSearchParams object
   params: {},
 
-  // `data` is the data to be sent as the request body
+  // `data` is the data to be sent as the request body, default to null
   // Only applicable for request methods 'PUT', 'POST', and 'PATCH'
-  // When no `transformRequest` is set, must be of one of the following types:
-  // - string, plain object, ArrayBuffer, ArrayBufferView, URLSearchParams
-  // - Browser only: FormData, File, Blob
-  // - Node only: Stream
-  data: {},
+  data: null,
 
   // `responseType` indicates the type of data that the server will respond with
   // options are 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'
