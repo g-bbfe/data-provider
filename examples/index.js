@@ -10,12 +10,12 @@ const services = {
   getError() {
     const url = prefix + resource.error.path;
     let result = request(url);
-    return result.then(response => response, error => error);
+    return result.then(response => response);
   },
   getMe() {
     const url = prefix + resource.me.path;
     let result = request(url);
-    return result.then(response => response.json(), error => error);
+    return result.then(response => response.json());
   },
   async getAdmins() {
     const url = prefix + resource.admins.path;
@@ -29,12 +29,12 @@ const services = {
       body: JSON.stringify(payload)
     });
     let result = request(req);
-    return result.then(response => response.json(), error => error);
+    return result.then(response => response.json());
   },
   getAdmin(params) {
     const url = makeUrl(prefix + resource.admin.path, params);
     let result = request(url);
-    return result.then(response => response.json(), error => error);
+    return result.then(response => response.json());
   },
   deleteAdmin(params) {
     const url = makeUrl(prefix + resource.admin.path, params);
@@ -42,7 +42,7 @@ const services = {
       method: 'DELETE'
     });
     let result = request(req);
-    return result.then(response => response, error => error);
+    return result.then(response => response);
   }
 };
 

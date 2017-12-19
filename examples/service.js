@@ -2,31 +2,29 @@ import DataProvider from '../src';
 
 let netWorker = new DataProvider({
   timeout: 2000,
-  errorIntercerptor: true
+  defaultErrorIntercerptor: true
 });
 
-// netWorker.addRequestInterceptor(request => {
-//   console.log('--------------request:', request);
-//   return request;
-// });
-
-// netWorker.addResponseInterceptor(response => {
-//   console.log('--------------response:', response);
-//   return response;
-// });
+netWorker.addRequestInterceptor(request => {
+  console.log('--------------request:', request);
+  return request;
+});
 
 netWorker.addResponseInterceptor(response => {
-  if (response.status > 400) {
-    return Promise.reject(`Maybe there's something wrong: ${response.status}`);
-  }
+  console.log('--------------response:', response);
   return response;
+});
+
+netWorker.addErrorInterceptor(error => {
+  console.log('--------------error:', error.type);
+  return error;
 });
 
 const request = (input, init) => {
   return netWorker.fetch(input, init).then(
     data => data,
     error => {
-      console.warn('I get an error:', error);
+      // console.warn('I get an error:', error);
       throw error;
     }
   );

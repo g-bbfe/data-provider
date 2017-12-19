@@ -15,7 +15,7 @@ export default class DataProvider {
     this.ErrorType = Const.ERROR_TYPE;
     this.requests = {};
     this.responses = {};
-    if (options.errorIntercerptor) {
+    if (options.defaultErrorIntercerptor) {
       this.addResponseInterceptor(errorInterceptor);
       this.addErrorInterceptor(errorLocaleInterceptor);
     }
