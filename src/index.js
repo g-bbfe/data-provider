@@ -1,9 +1,8 @@
 import fetchFactory from './networker';
-import Const from './const';
 import checkError from './interceptors/checkError';
-import errorLocale from './interceptors/errorLocale';
-import { isEqual } from 'lodash';
-import createError from './utils/createError';
+import createRequest from './utils/createRequest';
+import setRequest from './utils/requestMap';
+import makeKey from './utils/makeKey';
 
 export default class DataProvider {
   constructor(options) {
@@ -11,13 +10,8 @@ export default class DataProvider {
       timeout: options.timeout || 1000
     });
     this.netWorker = netWorker;
-    this.errorInterceptors = [];
-    this.ErrorType = Const.ERROR_TYPE;
-    this.requests = {};
-    this.responses = {};
-    if (options.defaultErrorIntercerptor) {
+    if (options.checkHttpStatus) {
       this.addResponseInterceptor(checkError);
-      this.addErrorInterceptor(errorLocale);
     }
   }
 
@@ -29,77 +23,20 @@ export default class DataProvider {
     this.netWorker.addResponseInterceptor(interceptor);
   }
 
-  addErrorInterceptor(interceptor) {
-    this.errorInterceptors.push(interceptor);
-  }
-
-  // Decorate the fetch, make it can merge identical requests.
-  fetch(input, init) {
-    const request = new Request(input, init);
-    let equal = false;
-    // 'DELETE' is idempotent, but may get different response.
-    if (['GET', 'PUT'].includes(request.method)) {
-      equal = true;
-      // If two requests' [method, url, body] are equal, we think they are identical requests.
-      ['method', 'url', 'body'].forEach(attr => {
-        const value = request[attr];
-        const sameRequest =
-          this.requests[request.url] &&
-          this.requests[request.url][request.method];
-        if (!sameRequest || !isEqual(value, sameRequest[attr])) {
-          equal = false;
-        }
-      });
-      if (!this.requests[request.url]) {
-        this.requests[request.url] = {};
+  async request(options = {}) {
+    let key = makeKey(options);
+    const req = createRequest(options);
+    let fetch = this.netWorker.fetch(req);
+    let response = await setRequest(key, fetch);
+    // console.log(response);
+    if (response instanceof Error) {
+      return Promise.resolve(response);
+    } else {
+      if (req.method !== 'DELETE') {
+        return response.clone().json();
+      } else {
+        return Promise.resolve();
       }
-      this.requests[request.url][request.method] = request;
-    } else {
-      // When an idempotent request has been initiated, the cache may be already obsolete.
-      this.requests[request.url] = {};
-      this.responses[request.url] = {};
-    }
-    if (equal === true && this.responses[request.url][request.method]) {
-      return Promise.resolve(
-        // We should keep the cache be a clone.
-        // Otherwise it may cause a TypeError(Already read).
-        this.responses[request.url][request.method].clone()
-      );
-    } else {
-      return new Promise(async (resolve, reject) => {
-        try {
-          const response = await this.netWorker.fetch(request);
-          if (['GET', 'PUT'].includes(request.method)) {
-            if (!this.responses[request.url]) {
-              this.responses[request.url] = {};
-            }
-            // The response we cached should be a clone.
-            // Otherwise it may cause a TypeError(Already read).
-            this.responses[request.url][request.method] = response.clone();
-          }
-          resolve(response);
-        } catch (error) {
-          let timeout = error.toString().indexOf('timeout') !== -1;
-          let transformedError;
-          if (error instanceof Error) {
-            transformedError = error;
-          } else {
-            transformedError = createError({
-              message: error,
-              type: timeout ? this.ErrorType.TIMEOUT : this.ErrorType.NETWORK
-            });
-          }
-          this.errorInterceptors
-            .reduce((errorPromise, interceptor) => {
-              return errorPromise.then(error => {
-                return interceptor(error);
-              });
-            }, Promise.resolve(transformedError))
-            .then(error => {
-              reject(error);
-            });
-        }
-      });
     }
   }
 }

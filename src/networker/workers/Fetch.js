@@ -69,6 +69,9 @@ export default class FetchWorker {
         })
         .then(response => resolve(response))
         .catch(error => {
+          if (!(error instanceof Error)) {
+            error = new Error(error);
+          }
           reject(error);
         });
     });

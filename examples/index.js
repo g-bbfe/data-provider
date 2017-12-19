@@ -1,60 +1,63 @@
+import pathToRegexp from 'path-to-regexp';
 import request from './service';
-import { makeUrl, render } from './utils';
-import { error } from 'util';
+import { render } from './utils';
 import resource from './resources.js';
 
-const prefix =
-  'http://mock.bbfe.group/mock/5a1e89e8d3ef9a75725992d3/snc/api/v1';
+const urlCompiler = (path, params) => {
+  let url = pathToRegexp.compile(path)(params);
+  return url;
+};
 
 const services = {
-  getError() {
-    const url = prefix + resource.error.path;
-    let result = request(url);
-    return result.then(response => response);
+  async getError() {
+    let url = urlCompiler(resource.error.path);
+    let data = await request(url, 'GET');
+    return data;
   },
-  getMe() {
-    const url = prefix + resource.me.path;
-    let result = request(url);
-    return result.then(response => response.json());
+  async getMe({ params }) {
+    let url = urlCompiler(resource.me.path, params);
+    let data = await request(url, 'GET');
+    return data;
   },
   async getAdmins() {
-    const url = prefix + resource.admins.path;
-    let response = await request(url);
-    return Promise.resolve(response.json());
+    let url = urlCompiler(resource.admins.path);
+    let data = await request(url, 'GET');
+    return data;
   },
-  postAdmins(payload) {
-    const url = prefix + resource.admins.path;
-    let req = new Request(url, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-    let result = request(req);
-    return result.then(response => response.json());
+  async postAdmins({ payload }) {
+    let url = urlCompiler(resource.admins.path);
+    let data = await request(url, 'POST', JSON.stringify(payload));
+    return data;
   },
-  getAdmin(params) {
-    const url = makeUrl(prefix + resource.admin.path, params);
-    let result = request(url);
-    return result.then(response => response.json());
+  async getAdmin({ params }) {
+    let url = urlCompiler(resource.admin.path, params);
+    let data = await request(url, 'GET');
+    return data;
   },
-  deleteAdmin(params) {
-    const url = makeUrl(prefix + resource.admin.path, params);
-    let req = new Request(url, {
-      method: 'DELETE'
-    });
-    let result = request(req);
-    return result.then(response => response);
+  async deleteAdmin({ params }) {
+    let url = urlCompiler(resource.admin.path, params);
+    let data = await request(url, 'DELETE');
+    return data;
   }
 };
 
 services.getAdmins().then(data => {
-  render(data);
+  if (data instanceof Error) {
+    render(data.toString());
+  } else {
+    render(data);
+  }
 });
 
 window.addEventListener('click', function() {
   services
-    .getAdmin({ adminId: 1 })
+    .getAdmin({ params: { adminId: 1 } })
     .then(data => {
-      render(data);
+      if (data instanceof Error) {
+        render(data.toString());
+      } else {
+        render(data);
+      }
     })
     .catch(err => {
       console.log('error!', err);
@@ -62,17 +65,30 @@ window.addEventListener('click', function() {
 });
 
 services
-  .getAdmin({ adminId: 1 })
+  .getAdmin({ params: { adminId: 1 } })
   .then(data => {
-    render(data);
+    if (data instanceof Error) {
+      render(data.toString());
+    } else {
+      render(data);
+    }
   })
   .catch(err => {
     console.log('error!', err);
   });
 
-services.deleteAdmin({ adminId: 1 }).catch(err => {
-  console.log('error!', err);
-});
+services
+  .deleteAdmin({ params: { adminId: 1 } })
+  .then(data => {
+    if (data instanceof Error) {
+      render(data.toString());
+    } else {
+      document.body.style.background = '#ddd';
+    }
+  })
+  .catch(err => {
+    console.log('error!', err);
+  });
 
 let data = {
   name: 'string',
@@ -85,9 +101,13 @@ let data = {
   dn: 'string'
 };
 services
-  .postAdmins(data)
+  .postAdmins({ payload: data })
   .then(data => {
-    render(data);
+    if (data instanceof Error) {
+      render(data.toString());
+    } else {
+      render(data);
+    }
   })
   .catch(err => {
     console.log('error!', err);
@@ -96,7 +116,12 @@ services
 services
   .getError()
   .then(data => {
-    render(data);
+    if (data instanceof Error) {
+      document.body.style.color = 'red';
+      render(data.toString());
+    } else {
+      render(data);
+    }
   })
   .catch(err => {
     console.log('error!', err);

@@ -5,11 +5,14 @@ request manager with AOP interceptors.(use fetch)
 ### Usage
 
 ```javascript
-import DataProvider from '../src';
+import DataProvider from 'data-provider';
+import { isObject } from 'lodash';
+
+let baseURL = 'http://mock.bbfe.group/mock/5a1e89e8d3ef9a75725992d3/snc/api/v1';
 
 let netWorker = new DataProvider({
-  timeout: 2000,
-  defaultErrorIntercerptor: true // default errorIntercerptor
+  timeout: 5000,
+  checkHttpStatus: true
 });
 
 netWorker.addRequestInterceptor(request => {
@@ -22,25 +25,41 @@ netWorker.addResponseInterceptor(response => {
   return response;
 });
 
-netWorker.addErrorInterceptor(error => {
-  console.log('--------------error:', error.type);
-  return error;
-});
-
-const request = (input, init) => {
-  return netWorker.fetch(input, init).then(
-    data => data,
-    error => {
-      console.warn('I get an error:', error);
-      throw error;
+const request = (url, method, payload) => {
+  let options = {
+    url: url,
+    method: method,
+    baseURL: baseURL || '',
+    headers: {
+      'Content-Type': 'application/json'
     }
-  );
+  };
+  if (method.toUpperCase() === 'GET') {
+    options.annexable = true;
+  }
+  if (isObject(payload)) {
+    options.data = JSON.stringify(payload);
+  }
+  return netWorker.request(options);
 };
 
-export default request;
+
+async getAdmin({ path, params }) {
+  let url = urlCompiler(path, params);
+  let data = await request(url, 'GET');
+  return data;
+}
+
+getAdmin({ path: '/admins/:adminId', params: { adminId: 1 } })
+.then(data => {
+  if (data instanceof Error) {
+    console.log(data.toString());
+  } else {
+    conselo.log(data);
+  }
+});
 
 ```
-
 
 ### Development
 

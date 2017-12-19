@@ -15,8 +15,8 @@
   "author": "bbfe",
   "license": "ISC",
   "dependencies": {
-    "@bbfe/components-assembly": "1.0.1",
-    "lodash": "4.17.4"
+    "lodash": "4.17.4",
+    "path-to-regexp": "2.1.0"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",
