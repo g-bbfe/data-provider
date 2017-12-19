@@ -42,7 +42,6 @@ export default class FetchWorker {
         // throw request interceptors' errors
         .catch(
           error => {
-            console.log('Request Intercept Fail ... ', error);
             if (!(error instanceof Error)) {
               error = createError(error);
             }
@@ -68,7 +67,6 @@ export default class FetchWorker {
               // throw response interceptors' errors
               .catch(
                 error => {
-                  console.log('Response Intercept Fail ... ', error);
                   if (!(error instanceof Error)) {
                     error = createError(error);
                   }

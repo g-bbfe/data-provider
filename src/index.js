@@ -34,7 +34,7 @@ export default class DataProvider {
   }
 
   // Decorate the fetch, make it can merge identical requests.
-  async fetch(input, init) {
+  fetch(input, init) {
     const request = new Request(input, init);
     let equal = false;
     // 'DELETE' is idempotent, but may get different response.
@@ -66,36 +66,38 @@ export default class DataProvider {
         this.responses[request.url][request.method].clone()
       );
     } else {
-      try {
-        const response = await this.netWorker.fetch(request);
-        if (['GET', 'PUT'].includes(request.method)) {
-          if (!this.responses[request.url]) {
-            this.responses[request.url] = {};
+      return new Promise(async (resolve, reject) => {
+        try {
+          const response = await this.netWorker.fetch(request);
+          if (['GET', 'PUT'].includes(request.method)) {
+            if (!this.responses[request.url]) {
+              this.responses[request.url] = {};
+            }
+            // The response we cached should be a clone.
+            // Otherwise it may cause a TypeError(Already read).
+            this.responses[request.url][request.method] = response.clone();
           }
-          // The response we cached should be a clone.
-          // Otherwise it may cause a TypeError(Already read).
-          this.responses[request.url][request.method] = response.clone();
-        }
-        return Promise.resolve(response);
-      } catch (error) {
-        let transformedError;
-        if (error instanceof Error) {
-          transformedError = error;
-        } else {
-          transformedError = createError({
-            message: error
-          });
-        }
-        this.errorInterceptors
-          .reduce((errorPromise, interceptor) => {
-            return errorPromise.then(error => {
-              return interceptor(error);
+          resolve(response);
+        } catch (error) {
+          let transformedError;
+          if (error instanceof Error) {
+            transformedError = error;
+          } else {
+            transformedError = createError({
+              message: error
             });
-          }, Promise.resolve(transformedError))
-          .then(error => {
-            throw error;
-          });
-      }
+          }
+          this.errorInterceptors
+            .reduce((errorPromise, interceptor) => {
+              return errorPromise.then(error => {
+                return interceptor(error);
+              });
+            }, Promise.resolve(transformedError))
+            .then(error => {
+              reject(error);
+            });
+        }
+      });
     }
   }
 }
