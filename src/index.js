@@ -1,7 +1,7 @@
 import fetchFactory from './networker';
 import Const from './const';
-import errorInterceptor from './interceptors/errorInterceptor';
-import errorLocaleInterceptor from './interceptors/errorLocaleInterceptor';
+import checkError from './interceptors/checkError';
+import errorLocale from './interceptors/errorLocale';
 import { isEqual } from 'lodash';
 import createError from './utils/createError';
 
@@ -16,8 +16,8 @@ export default class DataProvider {
     this.requests = {};
     this.responses = {};
     if (options.defaultErrorIntercerptor) {
-      this.addResponseInterceptor(errorInterceptor);
-      this.addErrorInterceptor(errorLocaleInterceptor);
+      this.addResponseInterceptor(checkError);
+      this.addErrorInterceptor(errorLocale);
     }
   }
 
@@ -79,12 +79,14 @@ export default class DataProvider {
           }
           resolve(response);
         } catch (error) {
+          let timeout = error.toString().indexOf('timeout') !== -1;
           let transformedError;
           if (error instanceof Error) {
             transformedError = error;
           } else {
             transformedError = createError({
-              message: error
+              message: error,
+              type: timeout ? this.ErrorType.TIMEOUT : this.ErrorType.NETWORK
             });
           }
           this.errorInterceptors

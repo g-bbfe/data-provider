@@ -1,9 +1,7 @@
-import createError from '../utils/createError';
-
 // check for timeout
 const checkTimeout = t => {
   return new Promise(resolve => setTimeout(resolve, t)).then(function() {
-    return Promise.reject(createError(`timeout: ${t}`));
+    return Promise.reject(`timeout: ${t}`);
   });
 };
 // upload progress is not supported here.
@@ -42,9 +40,6 @@ export default class FetchWorker {
         // throw request interceptors' errors
         .catch(
           error => {
-            if (!(error instanceof Error)) {
-              error = createError(error);
-            }
             throw error;
           }
         )
@@ -67,9 +62,6 @@ export default class FetchWorker {
               // throw response interceptors' errors
               .catch(
                 error => {
-                  if (!(error instanceof Error)) {
-                    error = createError(error);
-                  }
                   throw error;
                 }
               )

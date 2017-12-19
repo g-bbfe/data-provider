@@ -16,7 +16,7 @@ netWorker.addResponseInterceptor(response => {
 });
 
 netWorker.addErrorInterceptor(error => {
-  console.log('--------------error:', error.type);
+  console.log('--------------error:', error.locale);
   return error;
 });
 

@@ -1,4 +1,6 @@
 import createError from '../utils/createError';
+import Const from '../const';
+const ERROR_TYPE = Const.ERROR_TYPE;
 
 let isUnValidateStatus = function(httpStatus) {
   return httpStatus >= 300 || httpStatus < 200;
@@ -34,6 +36,7 @@ export default function(responce) {
         {
           code,
           message: message || `Get ${httpStatusCode} error`,
+          type: ERROR_TYPE.BUSINESS,
           httpStatusCode
         }
       );
