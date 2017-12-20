@@ -24,9 +24,9 @@ const services = {
     let data = await request(url, 'GET');
     return data;
   },
-  async postAdmins({ payload }) {
+  async postAdmins({ body, query }) {
     let url = urlCompiler(resource.admins.path);
-    let data = await request(url, 'POST', JSON.stringify(payload));
+    let data = await request(url, 'POST', body, query);
     return data;
   },
   async getAdmin({ params }) {
@@ -101,7 +101,7 @@ let data = {
   dn: 'string'
 };
 services
-  .postAdmins({ payload: data })
+  .postAdmins({ body: data, query: {group: '1', type: 'super'} })
   .then(data => {
     if (data instanceof Error) {
       render(data.toString());
@@ -120,6 +120,7 @@ services
       document.body.style.color = 'red';
       render(data.toString());
     } else {
+      console.log('not error');
       render(data);
     }
   })

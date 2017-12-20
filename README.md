@@ -6,13 +6,22 @@ request manager with AOP interceptors.(use fetch)
 
 ```javascript
 import DataProvider from 'data-provider';
+import pathToRegexp from 'path-to-regexp';
 import { isObject } from 'lodash';
 
 let baseURL = 'http://mock.bbfe.group/mock/5a1e89e8d3ef9a75725992d3/snc/api/v1';
+let id = 0;
+
+const urlCompiler = (path, params) => {
+  let url = pathToRegexp.compile(path)(params);
+  return url;
+};
 
 let netWorker = new DataProvider({
   timeout: 5000,
-  checkHttpStatus: true
+  requestIdResolver: function(options) {
+    return options.method === 'GET' ? JSON.stringify({ options }) : id++;
+  }
 });
 
 netWorker.addRequestInterceptor(request => {
@@ -25,20 +34,20 @@ netWorker.addResponseInterceptor(response => {
   return response;
 });
 
-const request = (url, method, payload) => {
+const request = (url, method, body, query) => {
   let options = {
-    url: url,
-    method: method,
+    url,
+    method,
     baseURL: baseURL || '',
     headers: {
       'Content-Type': 'application/json'
     }
   };
-  if (method.toUpperCase() === 'GET') {
-    options.annexable = true;
+  if (body) {
+    options.body = isObject(body) ? JSON.stringify(body) : body;
   }
-  if (isObject(payload)) {
-    options.data = JSON.stringify(payload);
+  if (query) {
+    options.query = query;
   }
   return netWorker.request(options);
 };

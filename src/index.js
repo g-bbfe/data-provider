@@ -1,18 +1,15 @@
 import fetchFactory from './networker';
-import checkError from './interceptors/checkError';
 import createRequest from './utils/createRequest';
-import setRequest from './utils/requestMap';
-import makeKey from './utils/makeKey';
+import decorateFetchWorker from './utils/decorateFetchWorker';
+import defaultRequestIdResolver from './utils/requestIdResolver';
 
 export default class DataProvider {
   constructor(options) {
+    this.options = options;
     let netWorker = fetchFactory.createWorker({
       timeout: options.timeout || 1000
     });
     this.netWorker = netWorker;
-    if (options.checkHttpStatus) {
-      this.addResponseInterceptor(checkError);
-    }
   }
 
   addRequestInterceptor(interceptor) {
@@ -24,15 +21,18 @@ export default class DataProvider {
   }
 
   async request(options = {}) {
-    let key = makeKey(options);
+    let requestIdResolver = defaultRequestIdResolver;
+    if (this.options.requestIdResolver) {
+      requestIdResolver = this.options.requestIdResolver;
+    }
+    let requestId = requestIdResolver(options);
     const req = createRequest(options);
-    let fetch = this.netWorker.fetch(req);
-    let response = await setRequest(key, fetch);
-    // console.log(response);
+    const fetch = decorateFetchWorker(this.netWorker);
+    let response = await fetch(requestId, req);
     if (response instanceof Error) {
       return Promise.resolve(response);
     } else {
-      if (req.method !== 'DELETE') {
+      if (response.status !== 204) {
         return response.clone().json();
       } else {
         return Promise.resolve();
