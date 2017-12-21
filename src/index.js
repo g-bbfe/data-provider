@@ -4,7 +4,7 @@ import decorateFetchWorker from './utils/decorateFetchWorker';
 import defaultRequestIdResolver from './utils/requestIdResolver';
 
 export default class DataProvider {
-  constructor(options) {
+  constructor(options = {}) {
     this.options = options;
     let netWorker = fetchFactory.createWorker({
       timeout: options.timeout || 1000
@@ -20,13 +20,17 @@ export default class DataProvider {
     this.netWorker.addResponseInterceptor(interceptor);
   }
 
+  _createRequest(options) {
+    return createRequest(options);
+  }
+
   async request(options = {}) {
     let requestIdResolver = defaultRequestIdResolver;
     if (this.options.requestIdResolver) {
       requestIdResolver = this.options.requestIdResolver;
     }
     let requestId = requestIdResolver(options);
-    const req = createRequest(options);
+    const req = this._createRequest(options);
     const fetch = decorateFetchWorker(this.netWorker);
     let response = await fetch(requestId, req);
     if (response instanceof Error) {

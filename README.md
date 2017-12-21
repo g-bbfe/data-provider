@@ -17,19 +17,19 @@ const urlCompiler = (path, params) => {
   return url;
 };
 
-let netWorker = new DataProvider({
+let dataProvider = new DataProvider({
   timeout: 5000,
   requestIdResolver: function(options) {
     return options.method === 'GET' ? JSON.stringify({ options }) : id++;
   }
 });
 
-netWorker.addRequestInterceptor(request => {
+dataProvider.addRequestInterceptor(request => {
   console.log('--------------request:', request);
   return request;
 });
 
-netWorker.addResponseInterceptor(response => {
+dataProvider.addResponseInterceptor(response => {
   console.log('--------------response:', response);
   return response;
 });
@@ -49,7 +49,7 @@ const request = (url, method, body, query) => {
   if (query) {
     options.query = query;
   }
-  return netWorker.request(options);
+  return dataProvider.request(options);
 };
 
 

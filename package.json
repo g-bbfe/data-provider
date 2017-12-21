@@ -4,7 +4,7 @@
   "description": "request manager with AOP interceptors",
   "main": "./lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && mocha",
     "build": "rm -rf lib && babel src -d lib -s inline",
     "dev": "npm run build && webpack-dev-server --hot --inline"
   },
@@ -19,6 +19,8 @@
     "path-to-regexp": "2.1.0"
   },
   "devDependencies": {
+    "mocha": "^4.0.1",
+    "node-fetch": "^1.7.3",
     "babel-cli": "6.26.0",
     "babel-loader": "^7.1.2",
     "babel-eslint": "7.1.1",

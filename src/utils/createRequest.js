@@ -1,15 +1,16 @@
+import { isObject } from 'lodash';
+
 export default function(options) {
   let url;
   let headers;
-  let body;
-  let method = options.method.toUpperCase() || 'GET';
+  let method = (options.method || 'GET').toUpperCase();
   // Connect baseURL and url.
   if (options.baseURL) {
     url = options.baseURL + options.url;
   } else {
     url = options.url;
   }
-  if (options.query) {
+  if (options.query && isObject(options.query)) {
     let query = options.query;
     let keys = Object.keys(query);
     keys.forEach((key, index) => {
@@ -21,12 +22,12 @@ export default function(options) {
   if (options.headers) {
     headers = new Headers(options.headers);
   }
+  let init = { headers, method };
+
   // GET/DELETE request should not have body
   if (method && !['GET', 'DELETE'].includes(method)) {
-    body = options.body;
+    init.body = options.body;
   }
-  let init = { headers, body, method };
-
   // Other options
   if (options.mode) {
     init.mode = options.mode;
