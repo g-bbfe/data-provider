@@ -1,12 +1,11 @@
-import { getParamSerializer } from "../utils";
+import {getParamSerializer} from "../utils";
 import axios from "axios";
 import Const from "../const";
 import createError from "../utils/createError";
 const ERROR_TYPE = Const.ERROR_TYPE;
-const JSON = (typeof window === "undefined" ? global : window)
-  .JSON || {};
+const JSON = (typeof window === "undefined" ? global : window).JSON || {};
 // 异常数据结构
-const errorResponseStruct = { httpStatusCode: NaN, code: NaN, message: "" };
+const errorResponseStruct = {httpStatusCode: NaN, code: NaN, message: ""};
 /**
  * Determine if a value is an Object
  *
@@ -14,21 +13,20 @@ const errorResponseStruct = { httpStatusCode: NaN, code: NaN, message: "" };
  * @returns {boolean} True if value is an Object, otherwise false
  * @refer https://github.com/mzabriskie/axios/blob/master/lib/utils.js
  */
-const isObject = function isObject(val) {
+const isObject = function isObject(val){
   return val !== null && typeof val === "object";
 };
 
-const transformMissionConfig = function transformMissionConfig(config) {
+const transformMissionConfig = function transformMissionConfig(config){
   /**
    * @PATCH 
    * 
    * @description 支持传入自定义headers, 配置axios.default.headers
    * @date 2017-12-07
-   * @author weimengxi   
    */
   let defaultHeaders = axios.defaults.headers;
   let headers = config.headers;
-  let specialMethods = ["post", "put", "patch"];
+  let specialMethods = [ "post", "put", "patch" ];
 
   if (isObject(headers)) {
     specialMethods.forEach(method => {
@@ -41,10 +39,11 @@ const transformMissionConfig = function transformMissionConfig(config) {
   );
 
   let transformedConfig = Object.assign({}, config);
-  /*
+  /**
+   * @PATCH 
    * @desc  设置 http request body, 仅当http method 为 'PUT', 'POST', and 'PATCH' 时才设置
    * @see https://github.com/axios/axios#request-config
-  */
+   */
   if (
     specialMethods.indexOf(config.method) > -1 &&
     isObject(transformedConfig.data)
@@ -80,12 +79,11 @@ class AjaxWorkerFactory {
   defaultBizErrorStrategy(data, status, resolve, reject) {
     if (this.isUnValidateStatus(status) || this.isErrorData(data)) {
       let httpStatusCode = status;
-      let { code, message } = data.error || data;
+      let {code, message} = data.error || data;
 
-      let businessError = createError({ code, message, httpStatusCode });
+      let businessError = createError({code, message, httpStatusCode});
       reject(businessError);
-    }
-    else {
+    } else {
       resolve(data);
     }
   }
@@ -96,7 +94,7 @@ class AjaxWorkerFactory {
       let transformedConfig = transformMissionConfig(mission.config);
       axios
         .request(transformedConfig)
-        .then(({ data, status, statusText, headers, config, response }) => {
+        .then(({data, status, statusText, headers, config, response}) => {
           if (Object.prototype.toString.call(data) !== "[object Object]") {
             try {
               /*
@@ -104,8 +102,7 @@ class AjaxWorkerFactory {
                * restful 接口 返回 204 时，data 为 空字符串， 直接返回空字符串， 否则JSON.parse("")会抛出异常
                */
               data = status === 204 ? data : JSON.parse(data);
-            }
-            catch (e) {
+            } catch (e) {
               let message = "response is not a instance of JSON ";
               console.error("response of '%s' is not JSON ", config.url);
               let parserError = createError({
@@ -144,21 +141,21 @@ class AjaxWorkerFactory {
             // The request was made, but the server responded with a status code
             // that falls out of the range of 2xx
             let networkError;
-            let { status, statusText, headers, config, data } = error.response;
+            let {status, statusText, headers, config, data} = error.response;
 
             if (!this.businessErrorStrategy) {
               this.businessErrorStrategy = this.defaultBizErrorStrategy;
             }
             this.businessErrorStrategy(data, status, resolve, reject);
 
-            let { code, message } = data || {};
+            let {code, message} = data || {};
             let responseDataError = (data && data.error) || {};
             let type = ERROR_TYPE.NETWORK,
               httpStatusCode = status;
             // 兼容data.code 和 data.error这两种标志异常的方式， 优先选用code
             code = code || responseDataError.code;
             message = message || responseDataError.message || statusText;
-            networkError = createError({ type, httpStatusCode, code, message });
+            networkError = createError({type, httpStatusCode, code, message});
             reject(networkError);
           } else {
             // The request was made but no response was received

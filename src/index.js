@@ -1,3 +1,4 @@
+import cloneDeep from "lodash.clonedeep";
 import Deferred from "./utils/Deferred";
 import createError from "./utils/createError";
 import createComboPromise from "./utils/comboPromise";
@@ -96,6 +97,13 @@ function DataSource(workerCount = 10, strategy = null){
                 }, Promise.resolve(result))
                 .then(
                   result => {
+                    /**
+                   * @PATCH 
+                   * 
+                   * @description 返回深拷贝的结果,解除被合并请求的数据引用关系
+                   * @date 2017-12-22
+                   */
+                    result = cloneDeep(result);
                     requestDefer.resolve(result);
                   },
                   error => {
