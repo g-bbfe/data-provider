@@ -1,59 +1,109 @@
+import { error } from 'util';
 const assert = require('assert');
-const DataProvider = require('../lib');
-let dataProvider = new DataProvider();
+const DataProvider = require('../src');
 const fetch = require('node-fetch');
 let { FetchError, Headers, Request, Response } = fetch;
 global.fetch = fetch;
 global.Request = Request;
 global.Response = Response;
 global.Headers = Headers;
+let dataProvider;
+
+beforeEach(function() {
+  dataProvider = new DataProvider();
+});
 
 describe('DataProvider', function() {
-  describe('Interceptors', function() {
+  describe('#addRequestInterceptor()', function() {
     it('Add request interceptor should be ok', function() {
+      assert.equal(dataProvider.netWorker.interceptors.request.length, 0);
       dataProvider.addRequestInterceptor(request => request);
       assert.equal(dataProvider.netWorker.interceptors.request.length, 1);
+      return dataProvider.request({ url: 'http://example.com' }).then(data => {
+        assert.ok(true);
+      });
     });
+    it('Should throw error when request interceptor has a wrong return', function() {
+      dataProvider.addRequestInterceptor(request => {});
+      return dataProvider.request({ url: 'http://example.com' }).then(e => {
+        const messageRight =
+          e.toString() ==
+          'Error: Request interceptors may have a wrong return.(Expect a Request object)';
+        assert.ok(e instanceof Error && messageRight);
+      });
+    });
+  });
+  describe('#addResponseInterceptor()', function() {
     it('Add response interceptor should be ok', function() {
+      assert.equal(dataProvider.netWorker.interceptors.request.length, 0);
       dataProvider.addResponseInterceptor(response => response);
       assert.equal(dataProvider.netWorker.interceptors.response.length, 1);
+      return dataProvider.request({ url: 'http://example.com' }).then(data => {
+        assert.ok(true);
+      });
+    });
+    it('Should throw error when response interceptor has a wrong return', function() {
+      dataProvider.addResponseInterceptor(response => {});
+      return dataProvider.request({ url: 'http://example.com' }).then(e => {
+        const messageRight =
+          e.toString() ==
+          'Error: Response interceptors may have a wrong return.(Expect a Response object)';
+        assert.ok(e instanceof Error && messageRight);
+      });
     });
   });
 
-  describe('Create Request', function() {
-    it('Should have Request constructor', function() {
-      let request = new Request('');
-      assert.ok(true);
-    });
+  describe('#_createRequest()', function() {
     it('Should return a Request object', function() {
-      let request = dataProvider._createRequest({ url: '' });
+      let request = dataProvider._createRequest({ url: 'http://example.com' });
       assert.ok(request instanceof Request);
     });
+    it("Should join the url,baseURL,query into Request's url", function() {
+      let request = dataProvider._createRequest({
+        url: '/404',
+        baseURL: 'http://example.com',
+        query: { type: 1, group: 'super' }
+      });
+      assert.equal(request.url, 'http://example.com/404?type=1&group=super');
+    });
   });
 
-  describe('Get Response by request', function() {
-    it('Should have Response constructor', function() {
-      let response = new Response('');
-      assert.ok(true);
-    });
-    it('Should get a resolved Promise in any case', function() {
-      let res = dataProvider.request({ url: '' });
+  describe('#request()', function() {
+    it('Should return a resolved Promise if everything ok', function(done) {
+      let res = dataProvider.request({ url: 'http://example.com' });
       res.then(
         data => {
-          assert.ok(true);
+          done();
         },
-        err => {
-          assert.ok(false);
+        error => {
+          done(error);
         }
       );
     });
-    it('Should return a resolved error if something wrong', function() {
-      let res = dataProvider.request({ url: '' });
-      res.then(
-        err => {
-          assert.ok(err instanceof Error);
-        }
-      );
+    it('Should return a resolved Promise if something wrong', function(done) {
+      dataProvider.addResponseInterceptor(response => {});
+      let res = dataProvider.request({ url: 'http://example.com/' });
+      res
+        .then(data => {
+          assert.ok(data instanceof Error);
+          done();
+        })
+        .catch(error => {
+          done(error);
+        });
     });
+    it('Should return different Promise if there\' no requestIdResolver', function() {
+      let res1 = dataProvider.request({ url: 'http://example.com/' });
+      let res2 = dataProvider.request({ url: 'http://example.com/' });
+      assert.ok(res1 !== res2);
+    });
+    // it('Should return same Promise if the request accords with requestIdResolver', function() {
+    //   let id = 0;
+    //   let dataProvider = new DataProvider({
+    //     requestIdResolver: function(options) {
+    //       return options.method === 'GET' ? JSON.stringify({ options }) : id++;
+    //     }
+    //   });
+    // });
   });
 });

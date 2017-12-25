@@ -1,3 +1,5 @@
+import createError from '../utils/createError';
+
 // check for timeout
 const checkTimeout = t => {
   return new Promise(resolve => setTimeout(resolve, t)).then(function() {
@@ -10,7 +12,7 @@ const checkTimeout = t => {
 export default class FetchWorker {
   constructor(opt = {}) {
     this.options = {
-      timeout: opt.timeout || 1000
+      timeout: opt.timeout || /* istanbul ignore next */ 5000
     };
     this.interceptors = {
       request: [],
@@ -37,40 +39,33 @@ export default class FetchWorker {
         .reduce((request, interceptor) => {
           return request.then(interceptor);
         }, Promise.resolve(request))
-        // throw request interceptors' errors
-        .catch(
-          error => {
-            throw error;
-          }
-        )
         // do fetch
         .then(request => {
-          const res = fetch(request);
-          if (this.options.timeout) {
-            return Promise.race([res, checkTimeout(this.options.timeout)]);
-          } else {
-            return res;
+          if (!(request instanceof Request)) {
+            throw new Error(
+              'Request interceptors may have a wrong return.(Expect a Request object)'
+            );
           }
+          const res = fetch(request);
+          return Promise.race([res, checkTimeout(this.options.timeout)]);
         })
         .then(response => {
           // response interceptors
-          return (
-            responseInterceptors
-              .reduce((response, interceptor) => {
-                return response.then(interceptor);
-              }, Promise.resolve(response))
-              // throw response interceptors' errors
-              .catch(
-                error => {
-                  throw error;
-                }
-              )
-          );
+          return responseInterceptors.reduce((response, interceptor) => {
+            return response.then(interceptor);
+          }, Promise.resolve(response));
         })
-        .then(response => resolve(response))
+        .then(response => {
+          if (!(response instanceof Response)) {
+            throw new Error(
+              'Response interceptors may have a wrong return.(Expect a Response object)'
+            );
+          }
+          resolve(response);
+        })
         .catch(error => {
           if (!(error instanceof Error)) {
-            error = new Error(error);
+            createError(error);
           }
           reject(error);
         });

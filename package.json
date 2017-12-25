@@ -4,7 +4,7 @@
   "description": "request manager with AOP interceptors",
   "main": "./lib/index.js",
   "scripts": {
-    "test": "npm run build && mocha",
+    "test": "babel-node ./node_modules/.bin/babel-istanbul cover _mocha",
     "build": "rm -rf lib && babel src -d lib -s inline",
     "dev": "npm run build && webpack-dev-server --hot --inline"
   },
@@ -19,6 +19,8 @@
     "path-to-regexp": "2.1.0"
   },
   "devDependencies": {
+    "babel-istanbul": "^0.12.2",
+    "istanbul": "0.4.5",
     "mocha": "^4.0.1",
     "node-fetch": "^1.7.3",
     "babel-cli": "6.26.0",

@@ -4,17 +4,17 @@ export default function(networker) {
   return function(requestId, request) {
     let promise = requestMap.get(requestId);
     if (!(promise instanceof Promise)) {
-      promise = networker.fetch(request);
-      requestMap.set(requestId, promise);
-      promise.then(
+      promise = networker.fetch(request).then(
         data => {
           requestMap.delete(requestId);
+          return data;
         },
         error => {
           requestMap.delete(requestId);
-          return Promise.reject(error);
+          throw error;
         }
       );
+      requestMap.set(requestId, promise);
     }
     return promise;
   };
