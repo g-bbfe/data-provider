@@ -1,6 +1,28 @@
 import { isObject } from 'lodash';
 
+/**
+ * @param {object} options - 创建 Request 对象所需的参数，详见链接最底部:
+ * https://confluence.b.360.cn/display/AppopsFecommon/Data+Provider
+ * @param {string} options.url
+ * @param {string} options.baseURL
+ * @param {object} options.headers
+ * @param {string} options.method
+ * @param {(string|object)} options.body
+ * @param {object} options.query
+ * @param {string} options.mode
+ * @param {string} options.credentials
+ * @param {string} options.cache
+ * @param {string} options.redirect
+ * @param {string} options.referrer
+ * @param {string} options.integrity
+ */
+
 export default function(options) {
+  /**
+   * @TODO
+   * options 具体说明
+   * 哪些参数需要自己拼接
+   */
   let url;
   let headers;
   let method = (options.method || 'GET').toUpperCase();

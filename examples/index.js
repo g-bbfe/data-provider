@@ -116,11 +116,11 @@ services
 services
   .getError()
   .then(data => {
-    if (data instanceof Error) {
+    if (data.code === 404) {
       document.body.style.color = 'red';
-      render(data.toString());
+      render(data);
     } else {
-      console.log('not error');
+      console.log('not error', data);
       render(data);
     }
   })

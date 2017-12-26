@@ -1,12 +1,16 @@
-import fetchFactory from './networker';
+import networkerFactory from './networker';
 import createRequest from './utils/createRequest';
-import decorateFetchWorker from './utils/decorateFetchWorker';
+import getDecoratedFetch from './utils/getDecoratedFetch';
 import defaultRequestIdResolver from './utils/requestIdResolver';
 
 export default class DataProvider {
   constructor(options = {}) {
     this.options = options;
-    let netWorker = fetchFactory.createWorker({
+    let netWorker = networkerFactory.createWorker({
+      /**
+       * @TODO
+       * 可指定 worker
+       */
       timeout: options.timeout
     });
     this.netWorker = netWorker;
@@ -32,19 +36,14 @@ export default class DataProvider {
     }
     let requestId = requestIdResolver(options);
     const req = this._createRequest(options);
-    const fetch = decorateFetchWorker(this.netWorker);
+    /**
+     * @TODO 命名
+     */
+    const fetch = getDecoratedFetch(this.netWorker);
     let response;
     try {
       response = await fetch(requestId, req);
-      /* istanbul ignore if  */
-      if (response.status !== 204) {
-        return response
-          .clone()
-          .json()
-          .catch(() => response);
-      } else {
-        return;
-      }
+      return response.clone();
     } catch (e) {
       return e;
     }

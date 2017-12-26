@@ -3,7 +3,7 @@ import createError from '../utils/createError';
 // check for timeout
 const checkTimeout = t => {
   return new Promise(resolve => setTimeout(resolve, t)).then(function() {
-    return Promise.reject(`timeout: ${t}`);
+    return Promise.reject(createError(`timeout: ${t}`));
   });
 };
 // upload progress is not supported here.
@@ -42,7 +42,7 @@ export default class FetchWorker {
         // do fetch
         .then(request => {
           if (!(request instanceof Request)) {
-            throw new Error(
+            throw createError(
               'Request interceptors may have a wrong return.(Expect a Request object)'
             );
           }
@@ -57,17 +57,18 @@ export default class FetchWorker {
         })
         .then(response => {
           if (!(response instanceof Response)) {
-            throw new Error(
+            throw createError(
               'Response interceptors may have a wrong return.(Expect a Response object)'
             );
           }
           resolve(response);
         })
         .catch(error => {
+          let errorInstance = error;
           if (!(error instanceof Error)) {
-            createError(error);
+            errorInstance = createError(error);
           }
-          reject(error);
+          reject(errorInstance);
         });
     });
   }

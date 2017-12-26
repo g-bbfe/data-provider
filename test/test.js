@@ -97,13 +97,5 @@ describe('DataProvider', function() {
       let res2 = dataProvider.request({ url: 'http://example.com/' });
       assert.ok(res1 !== res2);
     });
-    // it('Should return same Promise if the request accords with requestIdResolver', function() {
-    //   let id = 0;
-    //   let dataProvider = new DataProvider({
-    //     requestIdResolver: function(options) {
-    //       return options.method === 'GET' ? JSON.stringify({ options }) : id++;
-    //     }
-    //   });
-    // });
   });
 });

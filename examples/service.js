@@ -2,8 +2,8 @@ import DataProvider from '../src';
 import { isObject } from 'lodash';
 
 let baseURL = 'http://mock.bbfe.group/mock/5a1e89e8d3ef9a75725992d3/snc/api/v1';
-let id = 0;
 
+let id = 0;
 let dataProvider = new DataProvider({
   timeout: 5000,
   requestIdResolver: function(options) {
@@ -21,7 +21,7 @@ dataProvider.addResponseInterceptor(response => {
   return response;
 });
 
-const request = (url, method, body, query) => {
+const request = async (url, method, body, query) => {
   let options = {
     url,
     method,
@@ -36,7 +36,12 @@ const request = (url, method, body, query) => {
   if (query) {
     options.query = query;
   }
-  return dataProvider.request(options);
+  let res = await dataProvider.request(options);
+  if (res.status !== 204) {
+    return res.clone().json();
+  } else {
+    return res;
+  }
 };
 
 export default request;
