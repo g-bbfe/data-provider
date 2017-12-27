@@ -1,19 +1,29 @@
 [TOC]
 
-# data-provider
+# Data provider [LEGACY]
 
-### Installation
 
+## Links
+- [axios](https://github.com/axios/axios)
+- [新版 data-provider](https://github.com/g-bbfe/data-provider/tree/master) 
+
+## Install
+
+```shell
+# legacy 版本的 major 版本为 0
+npm install @bbfe/data-provider@0.x.x
 ```
-npm install @bbfe/data-provider
-```
 
-### Features
+
+## Features
 
 - 提供面向切面的统一处理能力， 分为三个阶段`request`请求发起前， `response` 接收到正常响应时, `error` 接收响应异常时
 - 高频发生请求的合并处理功能
 
-### Example 
+
+## Quick Start
+
+### Usage
 
 参考`examples/dataService.js` 示例, 运行examples命令
 
