@@ -1,5 +1,5 @@
 {
-  "name": "data-provider",
+  "name": "@bbfe/data-provider",
   "version": "1.0.0",
   "description": "request manager with AOP interceptors",
   "main": "./lib/index.js",
