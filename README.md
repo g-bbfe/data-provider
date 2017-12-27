@@ -4,8 +4,8 @@
 
 ### 注意事项
 * 请确保body中的内容与headers里的Content-Type是对应的，否则可能会出现请求发送失败的情况，新版data-provider默认只添加'Accept'的相关headers。
-* 如果业务中需要针对不同的Content-Type对body进行处理，可以根据实际情况引入querystring或jquery-param等包。
-* 我们发送请求时，参数可能会包括param、query、body，其中param应该在传入url时就已经拼接在url里面了，只有query和body才应该以参数的形式传入。
+* 如果业务中需要针对不同的Content-Type对body进行序列化处理，如有需求， 可引入[qs](https://www.npmjs.com/package/qs)或[jquery-param](https://www.npmjs.com/package/jquery-param)等包。
+* 发送请求时，参数可能会包括param、query、body，其中param应该在传入url时就已经拼接在url里面了，只有query和body才应该以参数的形式传入。
 * query应该是个对象，如{ type: 'super', group: 1 }。
 * data-provider.request返回的是一个Response对象，需要按业务需求对其执行json化或者其他操作(详细内容请参考mdn对Response的描述)。
 * cookie默认是一直会带上的，如果不希望带cookie，需要自行在options中将'credentials'设为'omit'。
