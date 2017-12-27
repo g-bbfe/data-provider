@@ -86,28 +86,28 @@ getAdmin({ path: '/admins/:adminId', params: { adminId: 1 } })
 
 初始化DataProvider 实例需要的参数如下：
 
-参数名|默认值|参数类型|说明
-- | :-: | :- | :-
-timeout|5000|number|请求超时的时间
-requestIdResolver|() => id++|function|用于产生请求id的策略函数，如果多个请求的id相等，则这几个请求会被合并。
+|参数名|默认值|参数类型|说明|
+| - | :-: | :- | :- |
+|timeout|5000|Number|请求超时的时间|
+|requestIdResolver|() => id++|Function|用于产生请求id的策略函数，如果多个请求的id相等，则这几个请求会被合并。|
 
 ### `dataProvider.request(options)`
 
 DataProvider实例发起请求时需要的参数如下：
 
-参数名|默认值|参数类型|说明
-- | :-: | :- | :-
-url|-(必传)|string|资源的URL（包含param） 
-headers|{'Accept':'application/json, text/plain, \*/*'}|object|请求头，Accept已经默认加上了。
-method|'GET'|string|请求的方法
-baseURL|-|string|提供了这个参数的话，他会被拼接到url的前面
-body|-|string/object|请求数据，可以是Blob, BufferSource, FormData, URLSearchParams, 或 USVString对象（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）
-query|-|object|query参数，会被拼接到url的后面
-mode|'cors'|string|请求的模式, 比如 cors, no-cors, same-origin, 或 navigate。默认值应该为 cors。（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）
-credentials|'include'|string|想要在请求中使用的credentials：: omit, same-origin, 或 include。data-provider将其默认设为了include，即一直会带上cookie。如果不希望这样，需要自行将其设为omit。
-cache|'default'|string|请求中想要使用的cache mode。（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）
-redirect|'follow'|string|对重定向处理的模式： follow, error, or manual。（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）
-referrer|'client'|string|可选值no-referrer, client, 或一个 URL的 USVString 。（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）
+|参数名|默认值|参数类型|说明|
+|- | :-: | :- | :-|
+|url|-(必传)|string|资源的URL（包含param） |
+|headers|{'Accept':'application/json, text/plain, \*/*'}|object|请求头，Accept已经默认加上了。|
+|method|'GET'|string|请求的方法|
+|baseURL|-|string|提供了这个参数的话，他会被拼接到url的前面|
+|body|-|string/object|请求数据，可以是Blob, BufferSource, FormData, URLSearchParams, 或 USVString对象（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）|
+|query|-|object|query参数，会被拼接到url的后面|
+|mode|'cors'|string|请求的模式, 比如 cors, no-cors, same-origin, 或 navigate。默认值应该为 cors。（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）|
+|credentials|'include'|string|想要在请求中使用的credentials：: omit, same-origin, 或 include。data-provider将其默认设为了include，即一直会带上cookie。如果不希望这样，需要自行将其设为omit。|
+|cache|'default'|string|请求中想要使用的cache mode。（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）|
+|redirect|'follow'|string|对重定向处理的模式： follow, error, or manual。（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）|
+|referrer|'client'|string|可选值no-referrer, client, 或一个 URL的 USVString 。（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）|
 integrity|-|string|包括请求的 subresource integrity 值（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）
 
 
