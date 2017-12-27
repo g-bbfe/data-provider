@@ -1,19 +1,29 @@
 {
   "name": "data-provider",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "request manager with AOP interceptors",
   "main": "./lib/index.js",
+  "files": [
+    "lib",
+    "src",
+    "test"
+  ],
+  "keywords": [
+    "fetch",
+    "aop",
+    "interceptors"
+  ],
   "scripts": {
     "test": "babel-node ./node_modules/.bin/babel-istanbul cover _mocha",
     "build": "rm -rf lib && babel src -d lib -s inline",
     "dev": "npm run build && webpack-dev-server --hot --inline"
   },
-  "keywords": [
-    "ajax",
-    "aop"
-  ],
   "author": "bbfe",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/g-bbfe/data-provider.git"
+  },
   "dependencies": {
     "lodash": "4.17.4",
     "path-to-regexp": "2.1.0"
