@@ -91,8 +91,8 @@ getAdmin({ path: '/admins/:adminId', params: { adminId: 1 } })
 
 初始化DataProvider 实例需要的参数如下：
 
-|参数名|默认值|参数类型|说明|
-| - | :-: | :- | :- |
+| 参数名 | 默认值 | 参数类型 | 说明 |
+| :--: | :--: | :--: | :------ |
 |timeout|5000|Number|请求超时的时间|
 |requestIdResolver|() => id++|Function|用于产生请求id的策略函数，如果多个请求的id相等，则这几个请求会被合并。|
 
@@ -101,7 +101,7 @@ getAdmin({ path: '/admins/:adminId', params: { adminId: 1 } })
 DataProvider实例发起请求时需要的参数如下：
 
 |参数名|默认值|参数类型|说明|
-|- | :-: | :- | :-|
+| :--: | :--: | :--: | :------ |
 |url|-(必传)|string|资源的URL（包含param） |
 |headers|{'Accept':'application/json, text/plain, \*/*'}|object|请求头，Accept已经默认加上了。|
 |method|'GET'|string|请求的方法|
