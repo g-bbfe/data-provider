@@ -44,7 +44,7 @@ dataProvider.addResponseInterceptor(response => {
   return response;
 });
 
-const request = (url, method, body, query) => {
+const request = async (url, method, body, query) => {
   let options = {
     url,
     method,
@@ -59,7 +59,12 @@ const request = (url, method, body, query) => {
   if (query) {
     options.query = query;
   }
-  return dataProvider.request(options);
+  let res = await dataProvider.request(options);
+  if (res instanceof Error || res.status === 204) {
+    return res;
+  } else {
+    return res.clone().json();
+  }
 };
 
 
