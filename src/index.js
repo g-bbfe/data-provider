@@ -36,9 +36,6 @@ export default class DataProvider {
     }
     let requestId = requestIdResolver(options);
     const req = this._createRequest(options);
-    /**
-     * @TODO 命名
-     */
     const fetch = getDecoratedFetch(this.netWorker);
     let response;
     try {

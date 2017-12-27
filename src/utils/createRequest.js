@@ -1,8 +1,7 @@
 import { isObject } from 'lodash';
 
 /**
- * @param {object} options - 创建 Request 对象所需的参数，详见链接最底部:
- * https://confluence.b.360.cn/display/AppopsFecommon/Data+Provider
+ * @param {object} options - 创建 Request 对象所需的参数，详见README
  * @param {string} options.url
  * @param {string} options.baseURL
  * @param {object} options.headers
@@ -18,11 +17,6 @@ import { isObject } from 'lodash';
  */
 
 export default function(options) {
-  /**
-   * @TODO
-   * options 具体说明
-   * 哪些参数需要自己拼接
-   */
   let url;
   let headers;
   let method = (options.method || 'GET').toUpperCase();
@@ -44,7 +38,13 @@ export default function(options) {
   /* istanbul ignore if  */
   if (options.headers) {
     headers = new Headers(options.headers);
+  } else {
+    headers = new Headers();
   }
+  /**
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept
+   */
+  headers.append('Accept', 'application/json, text/plain, */*');
   let init = { headers, method };
 
   // GET/DELETE request should not have body
@@ -56,10 +56,15 @@ export default function(options) {
   /* istanbul ignore if  */
   if (options.mode) {
     init.mode = options.mode;
+  } else {
+    init.mode = 'cors';
   }
   /* istanbul ignore if  */
   if (options.credentials) {
     init.credentials = options.credentials;
+  } else {
+    // 默认带上cookie
+    init.credentials = 'include';
   }
   /* istanbul ignore if  */
   if (options.cache) {
