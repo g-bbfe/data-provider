@@ -60,7 +60,8 @@ const request = async (url, method, body, query) => {
     options.query = query;
   }
   let res = await dataProvider.request(options);
-  if (res instanceof Error || res.status === 204) {
+  let text = await res.clone().text();
+  if (res instanceof Error || text === '') {
     return res;
   } else {
     return res.clone().json();
