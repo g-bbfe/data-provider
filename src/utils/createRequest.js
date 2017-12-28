@@ -32,8 +32,8 @@ export default function(options) {
       let keys = Object.keys(query);
       keys.forEach((key, index) => {
         index === 0
-          ? (url = `${url}?${key}=${query[key]}`)
-          : (url = `${url}&${key}=${query[key]}`);
+          ? (url = `${url}?${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`)
+          : (url = `${url}&${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`);
       });
     } else if (typeof options.query === 'string') {
       let query = options.query;
