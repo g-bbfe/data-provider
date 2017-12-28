@@ -26,14 +26,19 @@ export default function(options) {
   } else {
     url = options.url;
   }
-  if (options.query && isObject(options.query)) {
-    let query = options.query;
-    let keys = Object.keys(query);
-    keys.forEach((key, index) => {
-      index === 0
-        ? (url = `${url}?${key}=${query[key]}`)
-        : (url = `${url}&${key}=${query[key]}`);
-    });
+  if (options.query) {
+    if (isObject(options.query)) {
+      let query = options.query;
+      let keys = Object.keys(query);
+      keys.forEach((key, index) => {
+        index === 0
+          ? (url = `${url}?${key}=${query[key]}`)
+          : (url = `${url}&${key}=${query[key]}`);
+      });
+    } else if (typeof options.query === 'string') {
+      let query = options.query;
+      query[0] == '?' ? (url = `${url}${query}`) : (url = `${url}?${query}`);
+    }
   }
   /* istanbul ignore if  */
   if (options.headers) {

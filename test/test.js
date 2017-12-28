@@ -66,6 +66,21 @@ describe('DataProvider', function() {
       });
       assert.equal(request.url, 'http://example.com/404?type=1&group=super');
     });
+    it("Should join query into Request's url if query is a string", function() {
+      let request = dataProvider._createRequest({
+        url: 'http://example.com/404',
+        query: '?type=1&group=super'
+      });
+      let request_sec = dataProvider._createRequest({
+        url: 'http://example.com/404',
+        query: 'type=1&group=super'
+      });
+      assert.equal(request.url, 'http://example.com/404?type=1&group=super');
+      assert.equal(
+        request_sec.url,
+        'http://example.com/404?type=1&group=super'
+      );
+    });
   });
 
   describe('#request()', function() {
@@ -92,7 +107,7 @@ describe('DataProvider', function() {
           done(error);
         });
     });
-    it('Should return different Promise if there\' no requestIdResolver', function() {
+    it("Should return different Promise if there' no requestIdResolver", function() {
       let res1 = dataProvider.request({ url: 'http://example.com/' });
       let res2 = dataProvider.request({ url: 'http://example.com/' });
       assert.ok(res1 !== res2);
