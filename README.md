@@ -115,6 +115,7 @@ DataProvider实例发起请求时需要的参数如下：
 |referrer|'client'|string|可选值no-referrer, client, 或一个 URL的 USVString 。（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）|
 integrity|-|string|包括请求的 subresource integrity 值（from [mdn](https://developer.mozilla.org/zh-CN/docs/Web/API/Request/Request)）
 
+除此之外，options也可以是一个**Request对象**，如果直接传入Request对象的话，data-provider会直接以这个Request对象发起请求。
 
 ## Noticifications
 * 请确保body中的内容与headers里的Content-Type是对应的，否则可能会出现请求发送失败的情况，新版data-provider默认只添加'Accept'的相关headers。

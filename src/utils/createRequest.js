@@ -17,6 +17,9 @@ import { isObject } from 'lodash';
  */
 
 export default function(options) {
+  if (options instanceof Request) {
+    return options;
+  }
   let url;
   let headers;
   let method = (options.method || 'GET').toUpperCase();

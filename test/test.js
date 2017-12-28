@@ -58,6 +58,11 @@ describe('DataProvider', function() {
       let request = dataProvider._createRequest({ url: 'http://example.com' });
       assert.ok(request instanceof Request);
     });
+    it('Should return itself if the option is a Request object', function() {
+      let _request = new Request('http://example.com');
+      let request = dataProvider._createRequest(_request);
+      assert.equal(_request, request);
+    });
     it("Should join the url,baseURL,query into Request's url", function() {
       let request = dataProvider._createRequest({
         url: '/404',
