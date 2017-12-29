@@ -37,11 +37,14 @@ const request = async (url, method, body, query) => {
     options.query = query;
   }
   let res = await dataProvider.request(options);
-  let text = await res.clone().text();
-  if (res instanceof Error || text === '') {
+  if (res instanceof Error) {
     return res;
   } else {
-    return res.clone().json();
+    let text = await res.text();
+    if (text === '') {
+      return res;
+    }
+    return JSON.parse(text);
   }
 };
 
